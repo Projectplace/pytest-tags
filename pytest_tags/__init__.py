@@ -1,1 +1,1 @@
-from .pytest_setup import *
+from .pytest_tags import *
