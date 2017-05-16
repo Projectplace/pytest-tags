@@ -32,7 +32,7 @@ def pytest_collection_modifyitems(items, config):
 
         if config.option.collectonly:
             info = item.parent.name.split("/")
-            print {"name": item.name, "folder": info[3], "module": info[4][:-3], "tags": tags.args}
+            print({"name": item.name, "folder": info[3], "module": info[4][:-3], "tags": tags.args})
 
         # This line fills two purposes. Handle the cases where '--tags'
         # 1) was omitted, this will run all tests except 'not active' and 'awaiting_fix' ones.
