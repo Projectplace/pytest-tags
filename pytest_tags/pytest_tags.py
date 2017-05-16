@@ -10,7 +10,11 @@ def pytest_configure(config):
                             "tags: mark test to run iff it has tag")
 
     # Create tags container based on command line parameters
-    config.parameter_tags = tagging.TagsParameter(config.option.driver.lower(),
+    try:
+        browser = config.option.driver.lower()
+    except AttributeError:
+        browser = None
+    config.parameter_tags = tagging.TagsParameter(browser,
                                                   config.option.tags)
 
 

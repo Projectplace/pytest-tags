@@ -11,7 +11,9 @@ class TagsParameter(object):
         @browser, eg. 'firefox', 'chrome', 'ie9'
         @parameter_tags, list of tags to run
         """
-        self._excluded_tags = ['active', AWAITING_FIX, browser]
+        self._excluded_tags = ['active', AWAITING_FIX]
+        if browser:
+            self._excluded_tags.append(browser)
         self._parameter_tags = TagsCollection.build_tags_list(parameter_tags)
 
     def should_pick_up(self, tags):
