@@ -4,7 +4,7 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    import tagging
+    from . import tagging
 
     config.addinivalue_line("markers",
                             "tags: mark test to run iff it has tag")
@@ -22,7 +22,7 @@ def pytest_collection_modifyitems(items, config):
     :param config: py.test config module
     :return: None
     """
-    import tagging
+    from . import tagging
 
     remaining = []
     deselected = []
