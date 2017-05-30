@@ -1,1 +1,1 @@
-from .pytest_tags import *
+from .pytest_tags import *  # noqa

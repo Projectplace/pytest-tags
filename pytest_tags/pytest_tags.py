@@ -1,6 +1,6 @@
 def pytest_addoption(parser):
-    parser.addoption("--tags", action="store", nargs="+", dest="tags", default=["all"],
-                     help="What tag(s) to run")
+    parser.addoption("--tags", action="store", nargs="+", dest="tags",
+                     default=["all"], help="What tag(s) to run")
 
 
 def pytest_configure(config):
@@ -36,10 +36,12 @@ def pytest_collection_modifyitems(items, config):
 
         if config.option.collectonly:
             info = item.parent.name.split("/")
-            print({"name": item.name, "folder": info[3], "module": info[4][:-3], "tags": tags.args})
+            print({"name": item.name, "folder": info[3],
+                   "module": info[4][:-3], "tags": tags.args})
 
         # This line fills two purposes. Handle the cases where '--tags'
-        # 1) was omitted, this will run all tests except 'not active' and 'awaiting_fix' ones.
+        # 1) was omitted, this will run all tests except 'not active' and
+        # 'awaiting_fix' ones.
         # 2) has no arguments (a case that can occur when running in Docker).
         tags = tags.args + ('all',) if tags else ['all']
 
