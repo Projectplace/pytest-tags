@@ -28,6 +28,9 @@ def test_file(testdir):
             @pytest.mark.tags('four', 'five')
             def test_four_and_five_tag():
                 pass
+            @pytest.mark.tags('six', 'not active')
+            def test_six_tag():
+                pass
             def test_no_tag():
                 pass
     """)
@@ -47,35 +50,40 @@ def assert_outcomes(result, passed=1, skipped=0, deselected=0, failed=0,
 
 def test_single_tag_one_result(test_file):
     result = test_file.runpytest('--tags', 'one')
-    assert_outcomes(result, deselected=7)
+    assert_outcomes(result, deselected=8)
 
 
 def test_single_tag_multiple_results(test_file):
     result = test_file.runpytest('--tags', 'two')
-    assert_outcomes(result, passed=3, deselected=5)
+    assert_outcomes(result, passed=3, deselected=6)
 
 
 def test_multiple_tags(test_file):
     result = test_file.runpytest('--tags', 'two', 'four')
-    assert_outcomes(result, passed=5, deselected=3)
+    assert_outcomes(result, passed=5, deselected=4)
 
 
 def test_no_tag(test_file):
     result = test_file.runpytest()
-    assert_outcomes(result, passed=8)
+    assert_outcomes(result, passed=8, deselected=1)
 
 
 @pytest.mark.parametrize('tag', ['not three', '~three'])
 def test_not_tag(test_file, tag):
     result = test_file.runpytest('--tags', 'two', tag)
-    assert_outcomes(result, passed=2, deselected=6)
+    assert_outcomes(result, passed=2, deselected=7)
 
 
 def test_filter_tag(test_file):
     result = test_file.runpytest('--tags', 'two+three')
-    assert_outcomes(result, deselected=7)
+    assert_outcomes(result, deselected=8)
 
 
 def test_multiple_filters(test_file):
     result = test_file.runpytest('--tags', 'two+three', 'four+five')
-    assert_outcomes(result, passed=2, deselected=6)
+    assert_outcomes(result, passed=2, deselected=7)
+
+
+def test_not_active(test_file):
+    result = test_file.runpytest('--tags', 'six')
+    assert_outcomes(result, passed=0, deselected=9)
