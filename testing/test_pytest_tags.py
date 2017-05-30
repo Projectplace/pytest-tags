@@ -13,7 +13,7 @@ def test_file(testdir):
             @pytest.mark.tags('two', 'three')
             def test_second_tag():
                 pass
-            @pytest.mark.tags('two')
+            @pytest.mark.tags('two', 'not firefox')
             def test_second_b_tag():
                 pass
             @pytest.mark.tags('three')
@@ -87,3 +87,8 @@ def test_multiple_filters(test_file):
 def test_not_active(test_file):
     result = test_file.runpytest('--tags', 'six')
     assert_outcomes(result, passed=0, deselected=9)
+
+
+def test_exclude_browser(test_file):
+    result = test_file.runpytest('--driver', 'Firefox', '--tags', 'two')
+    assert_outcomes(result, passed=2, deselected=7)
