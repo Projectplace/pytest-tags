@@ -22,7 +22,7 @@ setup(name='pytest-tags',
       packages=['pytest_tags'],
       entry_points={'pytest11': ['tags = pytest_tags.pytest_tags']},
       setup_requires=['setuptools_scm'],
-      install_requires=['pytest>=2.9.0', 'pytest-selenium>=1.9.1'],
+      install_requires=['pytest>=2.9.0'],
       license='Mozilla Public License 2.0 (MPL 2.0)',
       keywords='py.test pytest tags',
       classifiers=[

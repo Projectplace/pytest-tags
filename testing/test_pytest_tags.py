@@ -18,35 +18,44 @@ pytest_plugins = 'pytester'
 @pytest.fixture()
 def test_file(testdir):
     testdir.makepyfile("""
-            import pytest
-            @pytest.mark.tags('one', 'two')
-            def test_tag():
-                pass
-            @pytest.mark.tags('two', 'three')
-            def test_second_tag():
-                pass
-            @pytest.mark.tags('two', 'not firefox')
-            def test_second_b_tag():
-                pass
-            @pytest.mark.tags('three')
-            def test_third_tag():
-                pass
-            @pytest.mark.tags('four')
-            def test_fourth_tag():
-                pass
-            @pytest.mark.tags('five')
-            def test_fifth_tag():
-                pass
-            @pytest.mark.tags('four', 'five')
-            def test_four_and_five_tag():
-                pass
-            @pytest.mark.tags('six', 'not active')
-            def test_six_tag():
-                pass
-            def test_no_tag():
-                pass
+        import pytest
+        @pytest.mark.tags('one', 'two')
+        def test_tag():
+            pass
+        @pytest.mark.tags('two', 'three')
+        def test_second_tag():
+            pass
+        @pytest.mark.tags('two', 'not firefox')
+        def test_second_b_tag():
+            pass
+        @pytest.mark.tags('three', 'not Chrome')
+        def test_third_tag():
+            pass
+        @pytest.mark.tags('four', 'not Safari')
+        def test_fourth_tag():
+            pass
+        @pytest.mark.tags('five', 'not safari')
+        def test_fifth_tag():
+            pass
+        @pytest.mark.tags('four', 'five')
+        def test_four_and_five_tag():
+            pass
+        @pytest.mark.tags('six', 'not active')
+        def test_six_tag():
+            pass
+        def test_no_tag():
+            pass
     """)
     return testdir
+
+
+@pytest.fixture()
+def test_conf(test_file):
+    test_file.makeconftest("""
+        def pytest_addoption(parser):
+            parser.addoption("--driver", action="store", default="Firefox")
+    """)
+    return test_file
 
 
 def assert_outcomes(result, passed=1, skipped=0, deselected=0, failed=0,
@@ -101,6 +110,17 @@ def test_not_active(test_file):
     assert_outcomes(result, passed=0, deselected=9)
 
 
-def test_exclude_browser(test_file):
-    result = test_file.runpytest('--driver', 'Firefox', '--tags', 'two')
+def test_exclude_browser_default(test_conf):
+    result = test_conf.runpytest('--tags', 'two')
     assert_outcomes(result, passed=2, deselected=7)
+
+
+def test_exclude_browser_specified(test_conf):
+    result = test_conf.runpytest('--driver', 'Chrome', '--tags', 'three')
+    assert_outcomes(result, deselected=8)
+
+
+def test_exclude_browser_case_insensitive(test_conf):
+    result = test_conf.runpytest('--driver', 'Safari',
+                                 '--tags', 'four', 'five')
+    assert_outcomes(result, deselected=8)
