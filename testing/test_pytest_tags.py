@@ -124,3 +124,13 @@ def test_exclude_browser_case_insensitive(test_conf):
     result = test_conf.runpytest('--driver', 'Safari',
                                  '--tags', 'four', 'five')
     assert_outcomes(result, deselected=8)
+
+
+def test_precedence(test_file):
+    result = test_file.runpytest('--tags', 'two', 'not two')
+    assert_outcomes(result, passed=0, deselected=9)
+
+
+def test_all_tags(test_file):
+    result = test_file.runpytest('--tags', 'all')
+    assert_outcomes(result, passed=8, deselected=1)
