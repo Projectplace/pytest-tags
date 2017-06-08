@@ -2,7 +2,7 @@ pytest-tags
 ===========
 
 The pytest-tags plugin provides a way to mark your tests with tags.
-This enhances the pytest's built-in collection system so that you can tag
+This enhances pytest's built-in collection system so that you can tag
 tests across and within modules including test function level.
 
 The tagging system works independently of the test names so it is not dependent on
@@ -15,12 +15,12 @@ To install pytest-tags using `pip <https://pip.pypa.io/>`_:
 
 .. code-block:: bash
 
-  $ pip install pytest-tags
+  $ pip install git+https://github.com/Projectplace/pytest-tags
 
 Usage
 *****
 
-There a couple of ways you can use ``--tags``
+There are a couple of ways you can use ``--tags``
 
     * Run with a single tag
     * Run with multiple tags
@@ -34,7 +34,7 @@ __________
 
 Using ``--tags failure`` will run the test ``test_failed_login``.
 
-Using ``--tags login`` will run all the tests in the example.
+Using ``--tags login`` will run all the tests in the module except any excluded tags (more on that later).
 
 Multiple tags
 _____________
@@ -52,7 +52,8 @@ ____________
 Using ``--tags user 'not failure'`` will run all the tests marked with ``user``
 but exclude the ones marked with ``failure`
 
-**Note** If you're using the pytest-selenium plugin and specify ``driver`` you can mark tests with the browser
+**Note** If you're using the `pytest-selenium <https://github.com/pytest-dev/pytest-selenium>`_ plugin and specify
+``--driver`` you can mark tests with the browser
 name to avoid running tests against non-compatible browsers.
 
 Example::
