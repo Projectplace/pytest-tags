@@ -2,7 +2,7 @@ pytest-tags
 ===========
 
 The pytest-tags plugin provides a way to mark your tests with tags.
-This enhances pytest's built-in collection system so that you can tag
+This enhances `pytest's <https://docs.pytest.org/en/latest/>`_ built-in collection system so that you can tag
 tests across and within modules including test function level.
 
 The tagging system works independently of the test names so it is not dependent on
@@ -50,7 +50,7 @@ Exclude tags
 ____________
 
 Using ``--tags user 'not failure'`` will run all the tests marked with ``user``
-but exclude the ones marked with ``failure``
+but exclude the ones marked with ``failure``.
 
 **Note** If you're using the `pytest-selenium <https://github.com/pytest-dev/pytest-selenium>`_ plugin and specify
 ``--driver`` you can mark tests with the browser
