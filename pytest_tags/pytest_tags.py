@@ -72,3 +72,16 @@ def pytest_collection_modifyitems(items, config):
     if deselected:
         config.hook.pytest_deselected(items=deselected)
         items[:] = remaining
+
+
+def pytest_collection_finish(session):
+    """
+    Print how many tests were actually selected and are going to be run.
+
+    :param session: this py.test session
+    :return: None
+    """
+    line = "selected " + str(len(session.items)) + " items\n"
+    tr = session.config.pluginmanager.getplugin('terminalreporter')
+    if tr:  # terminal reporter is not available when running with xdist
+        tr.rewrite(line, bold=True)
