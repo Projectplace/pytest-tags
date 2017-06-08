@@ -50,7 +50,7 @@ Exclude tags
 ____________
 
 Using ``--tags user 'not failure'`` will run all the tests marked with ``user``
-but exclude the ones marked with ``failure`
+but exclude the ones marked with ``failure``
 
 **Note** If you're using the `pytest-selenium <https://github.com/pytest-dev/pytest-selenium>`_ plugin and specify
 ``--driver`` you can mark tests with the browser
