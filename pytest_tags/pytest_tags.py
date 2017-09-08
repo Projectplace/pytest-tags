@@ -28,7 +28,8 @@ def pytest_configure(config):
 
     # Create tags container based on command line parameters
     browser = None
-    if hasattr(config.option, 'driver'):
+    driver = getattr(config.option, 'driver', None)
+    if driver:
         browser = config.option.driver.lower()
 
     exclusion_tags = config.getini('exclusion_tags')
