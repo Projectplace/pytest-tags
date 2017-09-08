@@ -25,7 +25,8 @@ def pytest_configure(config):
 
     # Create tags container based on command line parameters
     browser = None
-    if hasattr(config.option, 'driver'):
+    driver = getattr(config.option, 'driver', None)
+    if driver:
         browser = config.option.driver.lower()
 
     config.parameter_tags = tagging.TagsParameter(browser,
