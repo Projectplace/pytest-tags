@@ -10,7 +10,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-AWAITING_FIX = "awaiting_fix"
 
 
 class TagsParameter(object):
@@ -20,12 +19,15 @@ class TagsParameter(object):
     and module tags.
     """
 
-    def __init__(self, browser, parameter_tags):
+    def __init__(self, browser, parameter_tags, exclusion_tags=None):
         """
-        @browser, eg. 'firefox', 'chrome', 'ie9'
-        @parameter_tags, list of tags to run
+        :param browser: eg. 'firefox', 'chrome', 'ie9'
+        :param parameter_tags: list of tags to run
+        :param: exclusion_tags: tags to be excluded from collection
         """
-        self._excluded_tags = ['active', AWAITING_FIX]
+        self._excluded_tags = ['active']
+        if exclusion_tags:
+            self._excluded_tags += exclusion_tags
         if browser:
             self._excluded_tags.append(browser)
         self._parameter_tags = TagsCollection.build_tags_list(parameter_tags)
@@ -86,11 +88,12 @@ class TagsCollection(object):
     """
 
     @staticmethod
-    def build_tags_list(tags):
+    def build_tags_list(tags, excluded_tags=None):
         """
         Convert a list of tags type<string> to a list of tag-objects <Tag>
 
         :param tags: list of tags type<string>
+        :param excluded_tags: list of tags to exclude, default None
         :return: list of tags type<Tag>
         """
         tags_list = []
@@ -100,11 +103,10 @@ class TagsCollection(object):
                 tags_list.append(Tag(tag[4:].lower(), False))
             elif tag.startswith("~"):
                 tags_list.append(Tag(tag[1:].lower(), False))
-            elif tag == AWAITING_FIX:
+            elif excluded_tags is not None and tag in excluded_tags:
                 tags_list.append(Tag(tag.lower(), False))
             else:
                 tags_list.append(Tag(tag.lower(), True))
-
         return tags_list
 
     @staticmethod

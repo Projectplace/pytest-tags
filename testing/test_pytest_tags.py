@@ -45,6 +45,12 @@ def test_file(testdir):
             pass
         def test_no_tag():
             pass
+        @pytest.mark.tags('dont', 'seven')
+        def test_exclusion_tags():
+            pass
+        @pytest.mark.tags('seven')
+        def test_seven_tag():
+            pass
     """)
     return testdir
 
@@ -54,6 +60,15 @@ def test_conf(test_file):
     test_file.makeconftest("""
         def pytest_addoption(parser):
             parser.addoption("--driver", action="store", default="Firefox")
+    """)
+    return test_file
+
+
+@pytest.fixture()
+def test_ini(test_file):
+    test_file.makefile('.ini', pytest="""
+        [pytest]
+        exclusion_tags = dont
     """)
     return test_file
 
@@ -71,66 +86,71 @@ def assert_outcomes(result, passed=1, skipped=0, deselected=0, failed=0,
 
 def test_single_tag_one_result(test_file):
     result = test_file.runpytest('--tags', 'one')
-    assert_outcomes(result, deselected=8)
+    assert_outcomes(result, deselected=10)
 
 
 def test_single_tag_multiple_results(test_file):
     result = test_file.runpytest('--tags', 'two')
-    assert_outcomes(result, passed=3, deselected=6)
+    assert_outcomes(result, passed=3, deselected=8)
 
 
 def test_multiple_tags(test_file):
     result = test_file.runpytest('--tags', 'two', 'four')
-    assert_outcomes(result, passed=5, deselected=4)
+    assert_outcomes(result, passed=5, deselected=6)
 
 
 def test_no_tag(test_file):
     result = test_file.runpytest()
-    assert_outcomes(result, passed=8, deselected=1)
+    assert_outcomes(result, passed=10, deselected=1)
 
 
 @pytest.mark.parametrize('tag', ['not three', '~three'])
 def test_not_tag(test_file, tag):
     result = test_file.runpytest('--tags', 'two', tag)
-    assert_outcomes(result, passed=2, deselected=7)
+    assert_outcomes(result, passed=2, deselected=9)
 
 
 def test_filter_tag(test_file):
     result = test_file.runpytest('--tags', 'two+three')
-    assert_outcomes(result, deselected=8)
+    assert_outcomes(result, deselected=10)
 
 
 def test_multiple_filters(test_file):
     result = test_file.runpytest('--tags', 'two+three', 'four+five')
-    assert_outcomes(result, passed=2, deselected=7)
+    assert_outcomes(result, passed=2, deselected=9)
 
 
 def test_not_active(test_file):
     result = test_file.runpytest('--tags', 'six')
-    assert_outcomes(result, passed=0, deselected=9)
+    assert_outcomes(result, passed=0, deselected=11)
 
 
 def test_exclude_browser_default(test_conf):
     result = test_conf.runpytest('--tags', 'two')
-    assert_outcomes(result, passed=2, deselected=7)
+    assert_outcomes(result, passed=2, deselected=9)
 
 
 def test_exclude_browser_specified(test_conf):
     result = test_conf.runpytest('--driver', 'Chrome', '--tags', 'three')
-    assert_outcomes(result, deselected=8)
+    assert_outcomes(result, deselected=10)
 
 
 def test_exclude_browser_case_insensitive(test_conf):
     result = test_conf.runpytest('--driver', 'Safari',
                                  '--tags', 'four', 'five')
-    assert_outcomes(result, deselected=8)
+    assert_outcomes(result, deselected=10)
 
 
 def test_precedence(test_file):
     result = test_file.runpytest('--tags', 'two', 'not two')
-    assert_outcomes(result, passed=0, deselected=9)
+    assert_outcomes(result, passed=0, deselected=11)
 
 
 def test_all_tags(test_file):
     result = test_file.runpytest('--tags', 'all')
-    assert_outcomes(result, passed=8, deselected=1)
+    assert_outcomes(result, passed=10, deselected=1)
+
+
+def test_exclusion_tags(test_ini):
+    result = test_ini.runpytest('--tags', 'seven')
+    assert_outcomes(result, passed=1, deselected=10)

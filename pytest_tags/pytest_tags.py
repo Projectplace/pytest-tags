@@ -15,6 +15,9 @@ limitations under the License.
 def pytest_addoption(parser):
     parser.addoption("--tags", action="store", nargs="+", dest="tags",
                      default=["all"], help="What tag(s) to run")
+    parser.addini("exclusion_tags", "tests marked with tags in this list "
+                                    "will not be included in test collection.",
+                  type="args", default=[])
 
 
 def pytest_configure(config):
@@ -28,8 +31,10 @@ def pytest_configure(config):
     if hasattr(config.option, 'driver'):
         browser = config.option.driver.lower()
 
+    exclusion_tags = config.getini('exclusion_tags')
     config.parameter_tags = tagging.TagsParameter(browser,
-                                                  config.option.tags)
+                                                  config.option.tags,
+                                                  exclusion_tags)
 
 
 def pytest_collection_modifyitems(items, config):
@@ -60,7 +65,9 @@ def pytest_collection_modifyitems(items, config):
         tags = tags.args + ('all',) if tags else ['all']
 
         # Create a list of the tags
-        tags_list = tagging.TagsCollection.build_tags_list(tags)
+        exclusion_tags = config.getini('exclusion_tags')
+        tags_list = tagging.TagsCollection.build_tags_list(tags,
+                                                           exclusion_tags)
 
         # Determine if test should be run depending on the parameter tags
         # See also: pytest_configure hook
