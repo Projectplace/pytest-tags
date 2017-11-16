@@ -21,57 +21,24 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    from . import tagging
-
     config.addinivalue_line("markers",
                             "tags: mark test to run iff it has tag")
 
-    # Create tags container based on command line parameters
-    browser = None
-    if getattr(config.option, 'driver', False):
-        browser = config.option.driver.lower()
-
-    exclusion_tags = config.getini('exclusion_tags')
-    config.parameter_tags = tagging.TagsParameter(browser,
-                                                  config.option.tags,
-                                                  exclusion_tags)
-
 
 def pytest_collection_modifyitems(items, config):
-    """
-    py.test hook for modifying collected items
-
-    :param items: list of collected test
-    :param config: py.test config module
-    :return: None
-    """
     from . import tagging
+
+    browser = get_browser(config)
+    exclusion_tags = config.getini('exclusion_tags')
+    tags_to_run = config.option.tags
 
     remaining = []
     deselected = []
     for item in items:
-        # Get all tags for this test (includes tags on class level if present)
         tags = item.get_marker("tags")
+        tags = list(tags.args) if tags else ['all']
 
-        if config.option.collectonly:
-            info = item.parent.name.split("/")
-            print({"name": item.name, "folder": info[3],
-                   "module": info[4][:-3], "tags": tags.args})
-
-        # This line fills two purposes. Handle the cases where '--tags'
-        # 1) was omitted, this will run all tests except 'not active' and
-        # 'awaiting_fix' ones.
-        # 2) has no arguments (a case that can occur when running in Docker).
-        tags = tags.args + ('all',) if tags else ['all']
-
-        # Create a list of the tags
-        exclusion_tags = config.getini('exclusion_tags')
-        tags_list = tagging.TagsCollection.build_tags_list(tags,
-                                                           exclusion_tags)
-
-        # Determine if test should be run depending on the parameter tags
-        # See also: pytest_configure hook
-        if config.parameter_tags.should_pick_up(tags_list):
+        if tagging.should_run(tags_to_run, tags, browser, exclusion_tags):
             remaining.append(item)
         else:
             deselected.append(item)
@@ -92,3 +59,11 @@ def pytest_collection_finish(session):
     tr = session.config.pluginmanager.getplugin('terminalreporter')
     if tr:  # terminal reporter is not available when running with xdist
         tr.rewrite(line, bold=True)
+
+
+def get_browser(config):
+    browser = getattr(config.option, 'driver', None)
+    if browser and browser.lower() == 'remote':
+        metadata = config.pluginmanager.getplugin('metadata').metadata(config)
+        browser = metadata['Capabilities']['browserName']
+    return browser

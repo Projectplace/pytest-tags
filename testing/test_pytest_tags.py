@@ -115,6 +115,16 @@ def test_filter_tag(test_file):
     assert_outcomes(result, deselected=10)
 
 
+def test_filter_combination(test_file):
+    result = test_file.runpytest('--tags', 'two+three', 'seven')
+    assert_outcomes(result, passed=3, deselected=8)
+
+
+def test_filter_combination_diff_order(test_file):
+    result = test_file.runpytest('--tags', 'seven', 'two+three')
+    assert_outcomes(result, passed=3, deselected=8)
+
+
 def test_multiple_filters(test_file):
     result = test_file.runpytest('--tags', 'two+three', 'four+five')
     assert_outcomes(result, passed=2, deselected=9)
