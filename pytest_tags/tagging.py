@@ -25,33 +25,22 @@ def should_run(parameter_tags, test_tags, browser=None, exclusion_tags=None):
     run = False
 
     # Should test be excluded?
-    for tag in default_exclusion_tags:
-        if tag in test_tags:
+    for tag in test_tags:
+        if {'~' + tag, 'not ' + tag}.intersection(parameter_tags) or \
+                        tag in default_exclusion_tags:
             return run
 
     # Any common items?
-    if set(test_tags).intersection(parameter_tags) \
-            or 'all' in parameter_tags:
+    if set(test_tags).intersection(parameter_tags) or 'all' in parameter_tags:
         run = True
 
     # Check for filter(s), ie. tag1+tag2
     else:
-        filtered_tags = []
         for tag in parameter_tags:
             if '+' in tag:
-                filtered_tags += tag.split('+')
-
-        if len(test_tags) > 1 and \
-                all(tag in filtered_tags for tag in test_tags):
-            run = True
-        else:
-            run = False
-
-    # Now check for other exclusions
-    if run:
-        for tag in test_tags:
-            if {'~'+tag, 'not '+tag}.intersection(parameter_tags):
-                run = False
-                break
+                filtered_tags = tag.split('+')
+                if all(tag in test_tags for tag in filtered_tags):
+                    run = True
+                    break
 
     return run
