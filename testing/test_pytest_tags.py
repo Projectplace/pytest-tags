@@ -19,6 +19,7 @@ pytest_plugins = 'pytester'
 def test_file(testdir):
     testdir.makepyfile("""
         import pytest
+        pytestmark = pytest.mark.tags("package")
         @pytest.mark.tags('one', 'two')
         def test_tag():
             pass
@@ -37,7 +38,7 @@ def test_file(testdir):
         @pytest.mark.tags('five', 'not safari')
         def test_fifth_tag():
             pass
-        @pytest.mark.tags('four', 'five')
+        @pytest.mark.tags('four', 'five', 'filter')
         def test_four_and_five_tag():
             pass
         @pytest.mark.tags('six', 'not active')
@@ -115,6 +116,11 @@ def test_filter_tag(test_file):
     assert_outcomes(result, deselected=10)
 
 
+def test_long_filter(test_file):
+    result = test_file.runpytest('--tags', 'package+one+two')
+    assert_outcomes(result, deselected=10)
+
+
 def test_filter_combination(test_file):
     result = test_file.runpytest('--tags', 'two+three', 'seven')
     assert_outcomes(result, passed=3, deselected=8)
@@ -123,6 +129,12 @@ def test_filter_combination(test_file):
 def test_filter_combination_diff_order(test_file):
     result = test_file.runpytest('--tags', 'seven', 'two+three')
     assert_outcomes(result, passed=3, deselected=8)
+
+
+def test_filter_with_exclusion(test_file):
+    result = test_file.runpytest(
+        '--tags', 'two+three', 'four+five', 'not filter')
+    assert_outcomes(result, deselected=10)
 
 
 def test_multiple_filters(test_file):
