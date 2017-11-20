@@ -35,12 +35,11 @@ def should_run(parameter_tags, test_tags, browser=None, exclusion_tags=None):
         run = True
 
     # Check for filter(s), ie. tag1+tag2
-    else:
+    elif any([True if "+" in tag else False for tag in parameter_tags]):
         for tag in parameter_tags:
-            if '+' in tag:
-                filtered_tags = tag.split('+')
-                if all(tag in test_tags for tag in filtered_tags):
-                    run = True
-                    break
+            filtered_tags = tag.split('+')
+            if set(filtered_tags).issubset(set(test_tags)):
+                run = True
+                break
 
     return run
