@@ -61,6 +61,10 @@ def pytest_collection_finish(session):
         tr.rewrite(line, bold=True)
 
 
+def pytest_report_header(config):
+    return 'tags: {0}'.format(config.option.tags)
+
+
 def get_browser(config):
     browser = getattr(config.option, 'driver', None)
     if browser and browser.lower() == 'remote':

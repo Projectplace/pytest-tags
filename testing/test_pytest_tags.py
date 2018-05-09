@@ -176,3 +176,19 @@ def test_all_tags(test_file):
 def test_exclusion_tags(test_ini):
     result = test_ini.runpytest('--tags', 'seven')
     assert_outcomes(result, passed=1, deselected=10)
+
+
+def test_header_selected_deselected(test_file):
+    result = test_file.runpytest('--tags', 'seven', 'two+three')
+    result.stdout.fnmatch_lines(["*selected 3 items*",
+                                 "*8 deselected*"])
+
+
+def test_header_output_no_tags(test_file):
+    result = test_file.runpytest()
+    result.stdout.fnmatch_lines(["tags: ['all']"])
+
+
+def test_header_output(test_file):
+    result = test_file.runpytest('--tags', 'seven', 'two+three')
+    result.stdout.fnmatch_lines(["tags: ['seven', 'two+three']"])
