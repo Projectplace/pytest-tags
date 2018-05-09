@@ -6,6 +6,6 @@ __pycache__
 .eggs
 .tox
 .idea
+.pytest_cache
 build
 dist
-Pipfile*

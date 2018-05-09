@@ -66,8 +66,8 @@ def pytest_report_header(config):
 
 
 def get_browser(config):
-    browser = getattr(config.option, 'driver', None)
-    if browser and browser.lower() == 'remote':
-        metadata = config.pluginmanager.getplugin('metadata').metadata(config)
-        browser = metadata['Capabilities']['browserName']
+    try:
+        browser = config._capabilities['browserName']
+    except (AttributeError, KeyError):
+        browser = getattr(config.option, 'driver', None)
     return browser
