@@ -15,7 +15,7 @@ import pytest
 
 @pytest.fixture(scope='session')
 def tags(request):
-    """Return a base URL"""
+    """Return commandline tags"""
     config = request.config
     tags = config.getoption('tags')
     if tags is not None:
