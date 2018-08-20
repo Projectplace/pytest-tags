@@ -10,6 +10,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import pytest
+
+
+@pytest.fixture(scope='session')
+def tags(request):
+    """Return a base URL"""
+    config = request.config
+    tags = config.getoption('tags')
+    if tags is not None:
+        return tags
 
 
 def pytest_addoption(parser):
@@ -35,9 +45,7 @@ def pytest_collection_modifyitems(items, config):
     remaining = []
     deselected = []
     for item in items:
-        tags = item.get_marker("tags")
-        tags = list(tags.args) if tags else ['all']
-
+        tags = _get_test_tags(item)
         if tagging.should_run(tags_to_run, tags, browser, exclusion_tags):
             remaining.append(item)
         else:
@@ -62,7 +70,7 @@ def pytest_collection_finish(session):
 
 
 def pytest_report_header(config):
-    return 'tags: {0}'.format(config.option.tags)
+    return 'tags: {0}'.format(', '.join(config.option.tags))
 
 
 def get_browser(config):
@@ -71,3 +79,16 @@ def get_browser(config):
     except (AttributeError, KeyError):
         browser = getattr(config.option, 'driver', None)
     return browser
+
+
+def _get_test_tags(item):
+    try:
+        tags = list()
+        for each in item.iter_markers('tags'):
+            tags += each.args
+        tags = set(tags) or 'all'
+    except AttributeError:
+        tags = item.get_marker('tags')
+        tags = tags.args if tags else 'all'
+
+    return list(tags)
