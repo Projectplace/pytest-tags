@@ -14,10 +14,10 @@ from setuptools import setup
 
 setup(name='pytest-tags',
       use_scm_version=True,
-      description='pytest plugin for taggging tests',
+      description='pytest plugin for tagging tests',
       long_description=open('README.rst').read(),
-      author='Jim Brannlund',
-      author_email='jbrannlund@planview.com',
+      author='Planview',
+      author_email='baziz@planview.com',
       url='https://github.com/Projectplace/pytest-tags',
       packages=['pytest_tags'],
       entry_points={'pytest11': ['tags = pytest_tags.pytest_tags']},
