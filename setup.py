@@ -22,7 +22,7 @@ setup(name='pytest-tags',
       packages=['pytest_tags'],
       entry_points={'pytest11': ['tags = pytest_tags.pytest_tags']},
       setup_requires=['setuptools_scm'],
-      install_requires=['pytest>=3.7.2'],
+      install_requires=['pytest>=7.2.0'],
       license='Mozilla Public License 2.0 (MPL 2.0)',
       keywords='pytest pytest tags',
       classifiers=[
@@ -37,5 +37,5 @@ setup(name='pytest-tags',
           'Topic :: Software Development :: Testing',
           'Topic :: Utilities',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 3.6'
+          'Programming Language :: Python :: 3.8'
       ])
