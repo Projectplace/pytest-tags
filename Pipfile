@@ -3,9 +3,5 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[packages]
-py = ">=1.10.0"
-
 [dev-packages]
 tox = "*"
-py = ">=1.10.0"
